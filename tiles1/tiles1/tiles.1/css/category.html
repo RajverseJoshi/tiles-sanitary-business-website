@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Category — Elviro Bathware</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css">
+
+
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+<a href="tiles1.html"> <img src="image.png"  width=auto height="70px"></a>
+  
+  <ul class="nav-links">
+    <li><a href="category.html?type=toilets">Toilets</a></li>
+    <li><a href="category.html?type=washbasins">Basins</a></li>
+    <li><a href="category.html?type=kitchensinks">Kitchen</a></li>
+    <li><a href="category.html?type=bathfittings">Fittings</a></li>
+    <li><a href="category.html?type=furniture">Furniture</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">Get a Quote</a>
+  </a>
+</nav>
+
+<!-- ALL CATEGORIES STRIP -->
+<div class="all-categories" id="categoryStrip"></div>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  <a href="index.html">Home</a>
+  <span class="breadcrumb-sep">›</span>
+  <span id="breadcrumbCurrent">Category</span>
+</div>
+
+<!-- CATEGORY HERO -->
+<div class="category-hero">
+  <div class="category-hero-text">
+    <span class="category-icon" id="catIcon"></span>
+    <h1 class="category-title" id="catTitle">Loading...</h1>
+    <p class="category-desc" id="catDesc"></p>
+    <p class="category-meta" id="catMeta"></p>
+  </div>
+</div>
+
+<!-- FILTER + SORT -->
+<div class="controls-bar">
+  <button class="filter-btn active" data-filter="all">All</button>
+  <button class="filter-btn" data-filter="featured">Featured</button>
+  <select class="sort-select" id="sortSelect">
+    <option value="default">Sort: Default</option>
+    <option value="price-asc">Price: Low to High</option>
+    <option value="price-desc">Price: High to Low</option>
+    <option value="name-asc">Name: A–Z</option>
+  </select>
+</div>
+
+<!-- PRODUCT GRID -->
+<div class="products-grid" id="productsGrid"></div>
+
+<!-- FOOTER -->
+<footer>
+  
+  <span>© 2024 Elviro Bathware. All rights reserved.</span>
+  <div style="display:flex;gap:24px">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="index.html">Home</a>
+  </div>
+</footer>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-icon">✓</span>
+  <span id="toastMsg">Added to cart!</span>
+</div>
+
+<script src="products.js"></script>
+<script>
+  const params  = new URLSearchParams(window.location.search);
+  const typeKey = (params.get("type") || "toilets").toLowerCase();
+  const catInfo = CATEGORIES[typeKey] || { label: typeKey, icon: "📦", description: "" };
+
+  document.title = catInfo.label + " — Elviro Bathware";
+  document.getElementById("breadcrumbCurrent").textContent = catInfo.label;
+  document.getElementById("catIcon").textContent = catInfo.icon;
+  document.getElementById("catTitle").innerHTML  = catInfo.label.replace(/ /, "<br/><em>") + (catInfo.label.includes(" ") ? "</em>" : "");
+  document.getElementById("catDesc").textContent = catInfo.description;
+
+  /* CATEGORY STRIP */
+  const strip = document.getElementById("categoryStrip");
+  Object.entries(CATEGORIES).forEach(([key, val]) => {
+    const chip = document.createElement("a");
+    chip.href = `category.html?type=${key}`;
+    chip.className = "cat-chip" + (key === typeKey ? " active" : "");
+    chip.innerHTML = `${val.icon} ${val.label}`;
+    strip.appendChild(chip);
+  });
+
+  let allProducts  = getProductsByCategory(typeKey);
+  let activeFilter = "all";
+  let activeSort   = "default";
+
+  document.getElementById("catMeta").innerHTML =
+    `<strong>${allProducts.length}</strong> products in this category`;
+
+  function renderProducts() {
+    const grid = document.getElementById("productsGrid");
+    grid.innerHTML = "";
+    let list = [...allProducts];
+    if (activeFilter === "featured") list = list.filter(p => p.featured);
+    if (activeSort === "price-asc")  list.sort((a,b) => (a.price||0)-(b.price||0));
+    if (activeSort === "price-desc") list.sort((a,b) => (b.price||0)-(a.price||0));
+    if (activeSort === "name-asc")   list.sort((a,b) => a.name.localeCompare(b.name));
+
+    if (list.length === 0) {
+      grid.innerHTML = `<div class="empty-state"><h3>No products found</h3><p>Try a different filter or <a href="index.html" style="color:var(--primary)">browse all categories</a>.</p></div>`;
+      return;
+    }
+
+    list.forEach((product, i) => {
+      const card = document.createElement("a");
+      card.className = "product-card";
+      card.href = `product.html?id=${product.id}`;
+      card.innerHTML = `
+        <div class="product-card-img-wrap">
+          <img class="product-card-img" src="${product.image}" alt="${product.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x220?text=No+Image'" />
+          ${product.badge ? `<span class="product-badge">${product.badge}</span>` : ""}
+        </div>
+        <div class="product-card-body">
+          <h3 class="product-card-name">${product.name}</h3>
+          <p class="product-card-desc">${product.description}</p>
+          <div class="product-card-footer">
+            <span class="product-card-price">${formatPrice(product.price)}</span>
+            <span class="btn-view">View Details</span>
+          </div>
+        </div>`;
+      grid.appendChild(card);
+    });
+  }
+
+  document.querySelectorAll(".filter-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      activeFilter = btn.dataset.filter;
+      renderProducts();
+    });
+  });
+
+  document.getElementById("sortSelect").addEventListener("change", e => {
+    activeSort = e.target.value;
+    renderProducts();
+  });
+
+  function updateCartCount() {
+    document.getElementById("cartCount").textContent = Cart.count();
+  }
+  window.addEventListener("cartUpdated", updateCartCount);
+  updateCartCount();
+  renderProducts();
+</script>
+<script src="products.js"></script>
+<script src="script.js"></script>
+<script src="products.js"></script>
+
+<script>
+console.log(PRODUCTS);
+console.log(getProductsByCategory("toilets"));
+</script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diverter Set Collection | Enicet</title>
+  <!-- Link your existing global stylesheet so font choices and nav variables match -->
+  <link rel="stylesheet" href="./css/style.css">
+  <style>
+    /* Custom Grid Styles for the Product Listing Page */
+    .product-listing-section {
+      background: var(--warm-white);
+      padding: 140px 60px 80px; /* Extra top padding so it doesn't hide behind the sticky nav */
+    }
+    .product-header {
+      margin-bottom: 40px;
+      border-bottom: 1px solid var(--stone);
+      padding-bottom: 20px;
+    }
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr); /* 4 clean columns like the categories fix */
+      gap: 32px;
+    }
+    .product-card {
+      background: #FFFFFF;
+      border: 1px solid var(--stone);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.05);
+    }
+    .discount-badge {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      background: #FFEBEE;
+      color: #D32F2F;
+      font-size: 11px;
+      font-weight: bold;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+    .product-img-wrapper {
+      width: 100%;
+      height: 220px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .product-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain; /* Keeps product pictures looking crisp without weird cropping */
+    }
+    .product-title {
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--charcoal);
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    .product-price-row {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .current-price {
+      font-weight: bold;
+      color: var(--charcoal);
+      font-size: 16px;
+    }
+    .old-price {
+      text-decoration: line-through;
+      color: var(--taupe);
+      font-size: 13px;
+    }
+    .add-to-cart-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--charcoal);
+      color: #FFFFFF;
+      border: none;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .add-to-cart-btn:hover {
+      background: var(--accent); /* Changes to your main primary blue color on hover */
+    }
+    @media (max-width: 1024px) { .product-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .product-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+  <!-- Paste your existing HTML <nav> bar right here so navigation still works -->
+  <nav>
+    <a href="#" class="nav-logo">ENICET</a>
+    <!-- your links... -->
+  </nav>
+
+  <!-- PRODUCT LISTING GRID CONTAINER -->
+  <section class="product-listing-section">
+    <div class="product-header">
+      <h2 class="section-heading">Diverter Set <em>Collection</em></h2>
+      <p style="color: var(--taupe); margin-top: 8px;">19 products viewed</p>
+    </div>
+
+    <div class="product-grid">
+      
+      <!-- Card 1 -->
+      <div class="product-card">
+        <span class="discount-badge">-27%</span>
+        <div class="product-img-wrapper">
+          <img src="images/shower1.jpg" alt="4 Outlet Body Jet">
+        </div>
+        <h3 class="product-title">4 Outlet Body Jet Shower System</h3>
+        <div class="product-price-row">
+          <span class="current-price">Rs. 18,999.00</span>
+          <span class="old-price">Rs. 25,999.00</span>
+        </div>
+        <button class="add-to-cart-btn">Add to Cart</button>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="product-card">
+        <span class="discount-badge">-30%</span>
+        <div class="product-img-wrapper">
+          <img src="images/shower2.jpg" alt="Shower Diverter Set">
+        </div>
+        <h3 class="product-title">Shower Diverter Luxury Set</h3>
+        <div class="product-price-row">
+          <span class="current-price">Rs. 6,999.00</span>
+          <span class="old-price">Rs. 9,999.00</span>
+        </div>
+        <button class="add-to-cart-btn">Add to Cart</button>
+      </div>
+
+      <!-- Add more product cards inside this container just like above -->
+
+    </div>
+  </section>
+
+  <!-- Paste your existing HTML <footer> right here so the page looks complete -->
+
+</body>
+</html>

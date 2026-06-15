@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Product — Elviro Bathware</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+ <a href="tiles1.html"> <img src="image.png"  width=auto height="70px"></a>
+  
+  <ul class="nav-links">
+    <li><a href="category.html?type=toilets">Toilets</a></li>
+    <li><a href="category.html?type=washbasins">Basins</a></li>
+    <li><a href="category.html?type=kitchensinks">Kitchen</a></li>
+    <li><a href="category.html?type=bathfittings">Fittings</a></li>
+    <li><a href="category.html?type=furniture">Furniture</a></li>
+  </ul>
+ <a href="#contact" class="nav-cta">Get a Quote</a>
+</nav>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb" id="breadcrumb">
+  <a href="index.html">Home</a>
+  <span class="breadcrumb-sep">›</span>
+  <span id="bcCategory">...</span>
+  <span class="breadcrumb-sep">›</span>
+  <span id="bcProduct">...</span>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="productRoot"></div>
+
+<!-- RELATED -->
+<div class="related-section" id="relatedSection" style="display:none">
+  <h2 class="related-heading">More from this <em>Collection</em></h2>
+  <div class="related-grid" id="relatedGrid"></div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span class="logo">El<span>viro</span></span>
+  <span>© 2024 Elviro Bathware. All rights reserved.</span>
+  <div style="display:flex;gap:24px">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="index.html">Home</a>
+  </div>
+</footer>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-icon">✓</span>
+  <span id="toastMsg">Added to cart!</span>
+</div>
+
+<script src="products.js"></script>
+<script>
+  function showToast(msg) {
+    const t = document.getElementById("toast");
+    document.getElementById("toastMsg").textContent = msg;
+    t.classList.add("show");
+    setTimeout(() => t.classList.remove("show"), 3000);
+  }
+  function updateCartCount() {
+    document.getElementById("cartCount").textContent = Cart.count();
+  }
+  window.addEventListener("cartUpdated", updateCartCount);
+
+  const params    = new URLSearchParams(window.location.search);
+  const productId = params.get("id");
+  const product   = getProductById(productId);
+  const root      = document.getElementById("productRoot");
+
+  if (!product) {
+    root.innerHTML = `<div class="not-found"><h2>Product Not Found</h2><p>The product you're looking for doesn't exist. <a href="index.html">Go home</a></p></div>`;
+  } else {
+    document.title = product.name + " — Elviro Bathware";
+
+    const catInfo   = CATEGORIES[product.category] || { label: product.category };
+    document.getElementById("bcCategory").innerHTML =
+      `<a href="category.html?type=${product.category}">${catInfo.label}</a>`;
+    document.getElementById("bcProduct").textContent = product.name;
+
+    const allImages = [product.image, ...(product.gallery || [])].filter(Boolean);
+
+    const specsHTML = product.specs
+      ? Object.entries(product.specs).map(([k, v]) => `
+          <div class="spec-cell">
+            <div class="spec-cell-label">${k}</div>
+            <div class="spec-cell-value">${v}</div>
+          </div>`).join("")
+      : "";
+
+    const thumbsHTML = allImages.length > 1
+      ? allImages.map((src, i) => `
+          <img class="thumb-img ${i === 0 ? "active" : ""}"
+               src="${src}" data-full="${src}"
+               alt="${product.name} view ${i+1}" />`).join("")
+      : "";
+
+    root.innerHTML = `
+      <div class="product-layout">
+        <div class="image-panel">
+          <div class="main-image-wrap">
+            <img class="main-image" id="mainImage"
+                 src="${product.image}" alt="${product.name}"
+                 onerror="this.src='https://via.placeholder.com/600x480?text=No+Image'" />
+            ${product.badge ? `<span class="product-badge-lg">${product.badge}</span>` : ""}
+          </div>
+          ${thumbsHTML ? `<div class="thumb-row">${thumbsHTML}</div>` : ""}
+        </div>
+        <div class="detail-panel">
+          <a href="category.html?type=${product.category}" class="product-category-link">${catInfo.label}</a>
+          <h1 class="product-name">${product.name}</h1>
+          <div class="product-price">${formatPrice(product.price)}</div>
+          <p class="product-price-note">Inclusive of all taxes. Installation not included.</p>
+          <div class="divider"></div>
+          <p class="product-description">${product.description}</p>
+          ${specsHTML ? `<p class="specs-heading">Specifications</p><div class="specs-grid">${specsHTML}</div>` : ""}
+          <div class="qty-row">
+            <span class="qty-label">Quantity</span>
+            <div class="qty-control">
+              <button class="qty-btn" id="qtyMinus">−</button>
+              <input  class="qty-input" id="qtyInput" type="number" value="1" min="1" max="99" />
+              <button class="qty-btn" id="qtyPlus">+</button>
+            </div>
+          </div>
+          <div class="actions-row">
+            <button class="btn-add-cart" id="addToCartBtn">🛒 Add to Cart</button>
+            <button class="btn-enquiry"  id="enquiryBtn">✉ Enquire</button>
+          </div>
+          <div class="trust-row">
+            <div class="trust-item"><span class="trust-item-icon">🚚</span> Free delivery above ₹10,000</div>
+            <div class="trust-item"><span class="trust-item-icon">🔒</span> Secure checkout</div>
+            <div class="trust-item"><span class="trust-item-icon">↩</span> 7-day returns</div>
+            <div class="trust-item"><span class="trust-item-icon">✅</span> Certified quality</div>
+          </div>
+        </div>
+      </div>`;
+
+    /* THUMBNAIL SWITCHER */
+    document.querySelectorAll(".thumb-img").forEach(thumb => {
+      thumb.addEventListener("click", () => {
+        document.querySelectorAll(".thumb-img").forEach(t => t.classList.remove("active"));
+        thumb.classList.add("active");
+        document.getElementById("mainImage").src = thumb.dataset.full;
+      });
+    });
+
+    /* QTY CONTROLS */
+    const qtyInput = document.getElementById("qtyInput");
+    document.getElementById("qtyMinus").addEventListener("click", () => {
+      if (parseInt(qtyInput.value) > 1) qtyInput.value = parseInt(qtyInput.value) - 1;
+    });
+    document.getElementById("qtyPlus").addEventListener("click", () => {
+      if (parseInt(qtyInput.value) < 99) qtyInput.value = parseInt(qtyInput.value) + 1;
+    });
+    qtyInput.addEventListener("change", () => {
+      let v = parseInt(qtyInput.value);
+      if (isNaN(v) || v < 1) v = 1;
+      if (v > 99) v = 99;
+      qtyInput.value = v;
+    });
+
+    /* ADD TO CART */
+    document.getElementById("addToCartBtn").addEventListener("click", () => {
+      const qty = parseInt(qtyInput.value) || 1;
+      Cart.add(product.id, qty);
+      showToast(`"${product.name}" added to cart!`);
+      updateCartCount();
+    });
+
+    /* ENQUIRY */
+    document.getElementById("enquiryBtn").addEventListener("click", () => {
+      showToast("Enquiry sent! We'll contact you shortly.");
+    });
+
+    /* RELATED PRODUCTS */
+    const related = getProductsByCategory(product.category)
+      .filter(p => p.id !== product.id)
+      .slice(0, 4);
+
+    if (related.length > 0) {
+      const section = document.getElementById("relatedSection");
+      const grid    = document.getElementById("relatedGrid");
+      section.style.display = "block";
+      related.forEach(rp => {
+        const card = document.createElement("a");
+        card.className = "related-card";
+        card.href = `product.html?id=${rp.id}`;
+        card.innerHTML = `
+          <img src="${rp.image}" alt="${rp.name}" onerror="this.src='https://via.placeholder.com/300x180?text=No+Image'" />
+          <div class="related-card-body">
+            <div class="related-card-name">${rp.name}</div>
+            <div class="related-card-price">${formatPrice(rp.price)}</div>
+          </div>`;
+        grid.appendChild(card);
+      });
+    }
+  }
+
+  updateCartCount();
+</script>
+<script src="products.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
